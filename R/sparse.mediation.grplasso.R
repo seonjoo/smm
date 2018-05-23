@@ -15,7 +15,7 @@
 #' @param max.iter (default=100) maximum iteration
 #' @param lambda (default=log(1+(1:50)/125)) tuning parameter for L1 penalization
 #' @param grpgroup (default=c(1,rep( 1:V +1,2)))
-#' @param penalty.factor (default=c(0,rep(1,V))) give different weight of penalization for the 2V mediation paths.
+#' @param penalty.factor (default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.
 #' @return c directeffect
 #' @return hatb Path b (M->Y given X) estimates
 #' @return hata Path a (X->M) estimates
@@ -106,10 +106,10 @@ sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
 
       if(is.null(penalty.factor)==TRUE){
         #fit = glmnet(sqmatA, C,lambda=lambda[j],alpha=alpha)
-        fit=gglasso(x=scale(sqmatA), y=scale(C),lambda=lambda[j],group=grpgroup)
+        fit=gglasso(x=scale(sqmatA)[,order(grpgroup)], y=scale(C),lambda=lambda[j],group=grpgroup[order(grpgroup)])
       }else{
         #fit = glmnet(sqmatA, C,lambda=lambda[j],penalty.factor=penalty.factor,alpha=alpha)
-        fit=gglasso(x=scale(sqmatA), y=scale(C),lambda=lambda[j],group=grpgroup,pf = penalty.factor)
+        fit=gglasso(x=scale(sqmatA)[,order(grpgroup)], y=scale(C),lambda=lambda[j],group=grpgroup[order(grpgroup)],pf = penalty.factor)
       }
 
       beta_new = as.vector(coef(fit))[-1]
@@ -118,8 +118,8 @@ sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
         beta_new[abs(beta_new)<threshold]<-0
       }
       #beta_new[(1:V) +1]*beta_new[(1:V) +V+1]
-      gamma_new = beta_new[1:(V+1)]
-      alpha_new = beta_new[(1:V)+ V+1]
+      gamma_new = beta_new[c(1, (1:V)*2)]#beta_new[1:(V+1)]
+      alpha_new = beta_new[c(1, (1:V)*2+1)]#beta_new[(1:V)+ V+1]
       err = sum((beta_old[-1]-beta_new[-1])^2)
       iter=iter+1
       if (verbose==TRUE){print(c(iter, err))}
