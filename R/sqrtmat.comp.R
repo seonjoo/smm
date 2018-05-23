@@ -15,7 +15,7 @@
 #' @keywords squareroot
 #' @import parallel
 #' @import MASS
-#' @import glmnet
+#' @import grlpasso
 #' @import rsvd
 #' @export
 
