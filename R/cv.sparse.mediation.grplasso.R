@@ -36,10 +36,10 @@
 #' refit<-sparse.mediation.grplasso(X,M[,nonzerogroups==1],Y,lambda = 0)
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
-#' @keywords hdlfpca glmnet
+#' @keywords hdlfpca gglasso
 #' @import parallel
 #' @import MASS
-#' @import glmnet
+#' @import gglasso
 #' @export
 
 

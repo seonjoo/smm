@@ -37,7 +37,7 @@
 #' @keywords highdimensional mediation glmnet
 #' @import parallel
 #' @import MASS
-#' @import glmnet
+#' @import gglasso
 #' @export
 sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
                                      lambda = log(1+(1:50)/125),
