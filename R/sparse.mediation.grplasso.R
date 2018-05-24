@@ -119,7 +119,7 @@ sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
       }
       #beta_new[(1:V) +1]*beta_new[(1:V) +V+1]
       gamma_new = beta_new[c(1, (1:V)*2)]#beta_new[1:(V+1)]
-      alpha_new = beta_new[(1:V)*2+1)]#beta_new[(1:V)+ V+1]
+      alpha_new = beta_new[c(1:V)*2+1]#beta_new[(1:V)+ V+1]
       err = sum((beta_old[-1]-beta_new[-1])^2)
       iter=iter+1
       if (verbose==TRUE){print(c(iter, err))}
