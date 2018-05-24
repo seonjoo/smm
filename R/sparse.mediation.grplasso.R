@@ -127,7 +127,7 @@ sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
     betaest[,j]=beta_new
   }
   cest =betaest[1,]
-  medest = betaest[(1:V)+1,]*betaest[(1:V)+V+1,]
+  medest = betaest[c(1, (1:V)*2),]*betaest[c(1:V)*2+1,]
   nump=apply(betaest,2,function(x){sum(abs(x)>0)})
 
 
