@@ -40,7 +40,7 @@
 #' @import MASS
 #' @import gglasso
 #' @export
-sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
+sparse.modmediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
                                      lambda = log(1+(1:50)/125),
                                      grpgroup=c(rep(1,3), rep(1:V+1,5)),
                                      penalty.factor=c(0,rep(1,V)),
