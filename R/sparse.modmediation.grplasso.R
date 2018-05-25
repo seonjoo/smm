@@ -153,7 +153,7 @@ sparse.modmediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
   }
   cest =betaest[1:3,]
   medest = betaest[(1:V)+3,]*betaest[(1:V)+2*V+3,]
-  medest=  betaest[(1:V)+3+V,]*betaest[(1:V)+3*V+3,]
+  modest=  betaest[(1:V)+3+V,]*betaest[(1:V)+3*V+3,]
   nump=apply(betaest,2,function(x){sum(abs(x)>0)})
 
 
