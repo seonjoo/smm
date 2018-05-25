@@ -164,7 +164,7 @@ sparse.mediation.grplasso = function(X,M,Y,tol=10^(-10),max.iter=100,
     hata1=betaest[(1:V)+2*V+3,],
     hata2=betaest[(1:V)+3*V+3,],
     hata3=betaest[(1:V)+4*V+3,],
-    medest = medest,modest=modest
+    medest = medest,modest=modest,
     lambda = lambda,
     nump=nump
   ))
