@@ -5,8 +5,8 @@
 #' values for the regularization parameter lambda. Currently, mediation analysis is developed based on gaussian assumption.
 #'
 #' Multiple Mediaton Model:
-#' (1) M = Xa + e1
-#' (2) Y = Xc' + Mb + e2
+#' (1) M = Xa1 + XZ a2 + z a3 + e1
+#' (2) Y = Xc1 + XZ c2  + Mb1 + MZ b2 + Z c3 + e2
 #' And in the optimization, we do not regularize c', due to the assumption of partial mediation.
 #' @param X One-dimensional predictor
 #' @param M Multivariate mediator
@@ -57,7 +57,7 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
   Y = scale(Y,center=TRUE,scale=TRUE)
   X = matrix(scale(X,center=TRUE,scale=TRUE),N,1)
   M = scale(M, center=TRUE,scale=TRUE)
-  Z = scale(Z, center=TRUE,scale=TRUE)
+  Z = matrix(scale(Z, center=TRUE,scale=TRUE),N,1)
 
     #Y.mean=mean(Y)
   #X.mean=mean(X)
@@ -131,11 +131,14 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
       }
 
       beta_new = as.vector(coef(fit))[-1]
+#print(beta_new)
       ## use thresholds as well: since all variables are standardized, coefficients less than 0.001 does not have any meaning.
       if (threshold>0){
-        beta_new[abs(beta_new)<threshold]<-0
+        if (sum(abs(beta_new)<threshold)>0){
+          beta_new[abs(beta_new)<threshold]<-0
+        }
       }
-
+#print(beta_new)
       c_new=beta_new[1:3]
       b_new=beta_new[ c((1:V)*5-1 ,(1:V)*5)]
       a1_new=beta_new[ (1:V)*5+1 ]
@@ -143,7 +146,7 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
       a3_new=beta_new[ (1:V)*5+3 ]
 
       beta_new<-beta_new[c(1:3,(1:V)*5-1 ,(1:V)*5,(1:V)*5+1,(1:V)*5+2,(1:V)*5+3 )]
-
+      #print(beta_new)
       err = sum((beta_old[-c(1:3)]-beta_new[-c(1:3)])^2)
       iter=iter+1
       if (verbose==TRUE){print(c(iter, err))}
