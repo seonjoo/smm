@@ -45,7 +45,7 @@ cv.sparse.modmediation.grplasso= function(X,M,Y,tol=10^(-10),K=5,max.iter=100,
                                        lambda= log(1+(1:15)/40),
                                        grpgroup=c(rep(1,3), rep(1:V+1,5)),
                                        penalty.factor=c(0,rep(1,V)),
-                                       threshold=0,
+                                       threshold=0.00001,
                                        verbose=FALSE,
                                        multicore=1,seednum=1000000){
   ## Center all values
