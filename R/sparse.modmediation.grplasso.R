@@ -17,6 +17,7 @@
 #' @param lambda (default=log(1+(1:50)/125)) tuning parameter for L1 penalization
 #' @param grpgroup (default=c(rep(1,3),rep( 1:V +1,5)))
 #' @param penalty.factor (default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.
+#' @param X.cont (defult=TRUE) Related to standardization. If X is categorical data, standardiziagn won't apply.
 #' @return c directeffect
 #' @return hatb Path b (M->Y given X) estimates
 #' @return hata Path a (X->M) estimates
@@ -41,7 +42,7 @@
 #' @import gglasso
 #' @export
 sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
-                                     lambda = log(1+(1:50)/125),
+                                     lambda = log(1+(1:50)/125),X.cont=TRUE,
                                      grpgroup=c(rep(1,3), rep(1:V+1,5)),
                                      penalty.factor=c(0,rep(1,V)),
                                      threshold=0,
@@ -55,7 +56,9 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
   V = ncol(M)
 
   Y = scale(Y,center=TRUE,scale=TRUE)
-  X = matrix(scale(X,center=TRUE,scale=TRUE),N,1)
+  if(X.cont==TRUE){X = matrix(scale(X,center=TRUE,scale=TRUE),N,1)}
+  if(X.cont==FALSE){X = matrix(X,N,1)}
+
   M = scale(M, center=TRUE,scale=TRUE)
   Z = matrix(scale(Z, center=TRUE,scale=TRUE),N,1)
 
@@ -122,7 +125,7 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
       #sqmatA = A;sqmatA[1:(1+V),1:(1+V)]=1/sqrt(sigma1) * tUU.sqmat
       #sqmatA[(1+V)+ 1:V,(1+V)+ 1:V]=  sqrt(as.numeric(tXX)) * Sigma2.sqrt.inv
       #C = ginv(sqmatA) %*% rbind(tUY/sigma1, Sigma2.inv%*%tMX, )
-      C = ginv(sqmatA) %*% c(tUY/sigma1, as.vector(Sigma2.inv%*%t(M)%*%cbind(X, Z*X, Z)))
+      C = ginv(as.matrix(sqmatA)) %*% c(tUY/sigma1, as.vector(Sigma2.inv%*%t(M)%*%cbind(X, Z*X, Z)))
       if(is.null(penalty.factor)==TRUE){
         #fit = glmnet(sqmatA, C,lambda=lambda[j],alpha=alpha)
         fit=gglasso(x=scale(sqmatA)[,order(grpgroup)], y=scale(C),lambda=lambda[j],group=grpgroup[order(grpgroup)])
