@@ -121,7 +121,7 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
       #sqmatA = A;sqmatA[1:(1+V),1:(1+V)]=1/sqrt(sigma1) * tUU.sqmat
       #sqmatA[(1+V)+ 1:V,(1+V)+ 1:V]=  sqrt(as.numeric(tXX)) * Sigma2.sqrt.inv
       #C = ginv(sqmatA) %*% rbind(tUY/sigma1, Sigma2.inv%*%tMX, )
-      C = solve(sqmatA) %*% c(tUY/sigma1, as.vector(Sigma2.inv%*%t(M)%*%cbind(X, Z*X, Z)))
+      C = ginv(sqmatA) %*% c(tUY/sigma1, as.vector(Sigma2.inv%*%t(M)%*%cbind(X, Z*X, Z)))
       if(is.null(penalty.factor)==TRUE){
         #fit = glmnet(sqmatA, C,lambda=lambda[j],alpha=alpha)
         fit=gglasso(x=scale(sqmatA)[,order(grpgroup)], y=scale(C),lambda=lambda[j],group=grpgroup[order(grpgroup)])
