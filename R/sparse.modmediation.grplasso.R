@@ -112,12 +112,13 @@ sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
       Sigma2.inv=ginv(Sigma2)
 
 
-      A = bdiag(1/sigma1 * tUU,bdiag(tXX, tXZXZ, tZZ) %x% Sigma2.inv)
+      #A = bdiag(1/sigma1 * tUU,bdiag(tXX, tXZXZ, tZZ) %x% Sigma2.inv)
     #  A[1:(3+2*V),1:(3+2*V)]=1/sigma1 * tUU
     #  A[(1:V)+(3+2*V),1:V+(3+2*V)]=  as.numeric(tXX) * Sigma2.inv
     #  A[(1:V)+(3+3*V),1:V+(3+3*V)]=  as.numeric(tXZXZ) * Sigma2.inv
     #  A[(1:V)+(3+4*V),1:V+(3+4*V)]=  as.numeric(tZZ) * Sigma2.inv
       sqmatA=bdiag(1/sqrt(sigma1) * tUU.sqmat,bdiag(sqrt(tXX), sqrt(tXZXZ), sqrt(tZZ)) %x% Sigma2.sqrt.inv)
+      #print(sqmatA)
       #sqmatA = A;sqmatA[1:(1+V),1:(1+V)]=1/sqrt(sigma1) * tUU.sqmat
       #sqmatA[(1+V)+ 1:V,(1+V)+ 1:V]=  sqrt(as.numeric(tXX)) * Sigma2.sqrt.inv
       #C = ginv(sqmatA) %*% rbind(tUY/sigma1, Sigma2.inv%*%tMX, )
