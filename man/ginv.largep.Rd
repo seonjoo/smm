@@ -4,9 +4,13 @@
 \alias{ginv.largep}
 \title{Compute inverse, squareroot and inverse of the square root of the covariance}
 \usage{
-ginv.largep(x.c, sqrtmat = TRUE, sqrtinvmat = TRUE)
+ginv.largep(x.c, sqrtmat = TRUE, sqrtinvmat = TRUE, thresh = 10^{
+    -20
+})
 }
 \arguments{
+\item{thresh}{(default=10^{-20}) Threshold for eigen values}
+
 \item{mat}{One-dimensional predictor}
 }
 \value{

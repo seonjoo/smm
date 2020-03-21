@@ -1,7 +1,7 @@
 #' Compute squareroot of large covariance matrix
 #'
 #' @param mat Covariance matrix
-#' @param threshold
+#' @param thresh (default: 10^(-20)) for matrix decomposition
 #' @param K Dimension of the matrix. Default is set as ncol(mat)-1
 #' @return squareroot of matrix
 #' @examples
@@ -13,9 +13,7 @@
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
 #' @keywords squareroot
-#' @import parallel
 #' @import MASS
-#' @import grlpasso
 #' @import rsvd
 #' @export
 

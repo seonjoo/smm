@@ -6,12 +6,10 @@
 #' @param tol (default -10^(-10)) convergence criterion
 #' @param max.iter (default=100) maximum iteration
 #' @param lambda (default=log(1+(1:30)/100)) tuning parameter for L1 penalization
-#' @param figure (defult=NULL) print figures for mean predictive errors by tuning parameters alpha and lambda
 #' @param grpgroup (default=c(rep(1,3),rep( 1:V +1,5)))
 #' @param penalty.factor (default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.
 #' @param multicore (default=1) number of multicore
 #' @param seednum (default=10000) seed number for cross validation
-#' @param disply devault=FALSE
 #' @return cv.lambda: optimal lambda
 #' @return cv.mse: minimum MSE value
 #' @return mse: Array of MSE, length(alpha) x length(lambda) x length (tau)
@@ -27,11 +25,6 @@
 #' X = rnorm(N)
 #' M =  X %*% t(a)+ matrix(rnorm(N*V),N,V)
 #' Y =  as.vector(X + M %*% b + rnorm(N))
-#' system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 8,multicore = 4, seednum = 1e+06))
-#' cvfit$cv.lambda
-#' fit<-sparse.mediation.grplasso(X,M,Y,lambda = cvfit$cv.lambda)
-#' nonzerogroups = 1-as.numeric((fit$hata!=0)+(fit$hatb!=0) ==0)
-#' refit<-sparse.mediation.grplasso(X,M[,nonzerogroups==1],Y,lambda = 0)
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
 #' @keywords hdlfpca gglasso
@@ -41,11 +34,10 @@
 #' @export
 
 
-cv.sparse.modmediation.grplasso= function(X,M,Y,Z,tol=10^(-10),K=5,max.iter=100,
+cv.sparse.modmediation.grplasso= function(X,M,Y,Z,tol=10^(-5),K=5,max.iter=100,
                                        lambda= log(1+(1:15)/40),
                                        grpgroup=c(rep(1,3), rep(1:V+1,5)),
                                        penalty.factor=c(0,rep(1,V)),
-                                       threshold=0.00001,
                                        verbose=FALSE,
                                        multicore=1,seednum=1000000){
   ## Center all values

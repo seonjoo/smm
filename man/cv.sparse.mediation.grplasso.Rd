@@ -4,10 +4,21 @@
 \alias{cv.sparse.mediation.grplasso}
 \title{Conduct K-fold cross validation for sparse mediation with group lasso with multiple tuning parameters}
 \usage{
-cv.sparse.mediation.grplasso(X, M, Y, tol = 10^(-10), K = 5,
-  max.iter = 100, lambda = log(1 + (1:15)/40), grpgroup = c(1, rep(1:V +
-  1, 2)), penalty.factor = c(0, rep(1, V)), threshold = 0,
-  verbose = FALSE, multicore = 1, seednum = 1e+06)
+cv.sparse.mediation.grplasso(
+  X,
+  M,
+  Y,
+  tol = 10^(-5),
+  K = 5,
+  max.iter = 100,
+  lambda1 = exp(-5:0),
+  lambda2 = exp(seq(0, 0.5 * log(ncol(M)), length = 3)),
+  grpgroup = c(1, rep(1:V + 1, 2)),
+  penalty.factor = c(0, rep(1, V)),
+  verbose = FALSE,
+  multicore = 1,
+  seednum = 1e+05
+)
 }
 \arguments{
 \item{X}{One-dimensional predictor}
@@ -22,17 +33,15 @@ cv.sparse.mediation.grplasso(X, M, Y, tol = 10^(-10), K = 5,
 
 \item{max.iter}{(default=100) maximum iteration}
 
-\item{lambda}{(default=log(1+(1:30)/100)) tuning parameter for L1 penalization}
+\item{lambda1}{(default=exp(-5:0)) tuning parameter for L1 penalization}
+
+\item{lambda2}{(default=exp(-5:0)) tuning parameter for L1 penalization}
+
+\item{penalty.factor}{(default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.}
 
 \item{multicore}{(default=1) number of multicore}
 
 \item{seednum}{(default=10000) seed number for cross validation}
-
-\item{figure}{(defult=NULL) print figures for mean predictive errors by tuning parameters alpha and lambda}
-
-\item{glmnet.penalty.factor}{(default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.}
-
-\item{disply}{devault=FALSE}
 }
 \value{
 cv.lambda: optimal lambda
@@ -60,15 +69,15 @@ Conduct K-fold cross validation for sparse mediation with group lasso with multi
 N=200
 V=50
 set.seed(1234)
-a = rbinom(V,1,0.1)*5;b<-a
+a = c(rep(1,3),rep(0,V-3))*5;b<-a
 X = rnorm(N)
 M =  X \%*\% t(a)+ matrix(rnorm(N*V),N,V)
 Y =  as.vector(X + M \%*\% b + rnorm(N))
-system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 8,multicore = 4, seednum = 1e+06))
+system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 4,multicore = 4, seednum = 20200317))
 cvfit$cv.lambda
-fit<-sparse.mediation.grplasso(X,M,Y,lambda = cvfit$cv.lambda)
+fit<-sparse.mediation.grplasso(X,M,Y,lambda1 = cvfit$cv.lambda1,lambda2 = cvfit$cv.lambda2)
 nonzerogroups = 1-as.numeric((fit$hata!=0)+(fit$hatb!=0) ==0)
-refit<-sparse.mediation.grplasso(X,M[,nonzerogroups==1],Y,lambda = 0)
+refit<-sparse.mediation.grplasso(X,M[,nonzerogroups==1],Y,lambda = 0,lambda2 = cvfit$cv.lambda2)
 }
 \references{
 TBA
@@ -77,4 +86,3 @@ TBA
 Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 }
 \keyword{gglasso}
-\keyword{hdlfpca}

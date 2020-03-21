@@ -9,6 +9,8 @@ sqrtmat.comp(mat, thresh = 10^(-20), K = NULL)
 \arguments{
 \item{mat}{Covariance matrix}
 
+\item{thresh}{(default: 10^(-20)) for matrix decomposition}
+
 \item{K}{Dimension of the matrix. Default is set as ncol(mat)-1}
 }
 \value{

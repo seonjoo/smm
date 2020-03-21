@@ -6,12 +6,11 @@
 #' @param K (default=5) number of cross-validation folds
 #' @param tol (default -10^(-10)) convergence criterion
 #' @param max.iter (default=100) maximum iteration
-#' @param lambda (default=log(1+(1:30)/100)) tuning parameter for L1 penalization
-#' @param figure (defult=NULL) print figures for mean predictive errors by tuning parameters alpha and lambda
-#' @param glmnet.penalty.factor (default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.
+#' @param lambda1 (default=exp(-5:0)) tuning parameter for L1 penalization
+#' @param lambda2 (default=exp(-5:0)) tuning parameter for L1 penalization
+#' @param penalty.factor (default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.
 #' @param multicore (default=1) number of multicore
 #' @param seednum (default=10000) seed number for cross validation
-#' @param disply devault=FALSE
 #' @return cv.lambda: optimal lambda
 #' @return cv.tau: optimal tau
 #' @return cv.alpha: optimal tau
@@ -25,31 +24,32 @@
 #' N=200
 #' V=50
 #' set.seed(1234)
-#' a = rbinom(V,1,0.1)*5;b<-a
+#' a = c(rep(1,3),rep(0,V-3))*5;b<-a
 #' X = rnorm(N)
 #' M =  X %*% t(a)+ matrix(rnorm(N*V),N,V)
 #' Y =  as.vector(X + M %*% b + rnorm(N))
-#' system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 8,multicore = 4, seednum = 1e+06))
+#' system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 4,multicore = 4, seednum = 20200317))
 #' cvfit$cv.lambda
-#' fit<-sparse.mediation.grplasso(X,M,Y,lambda = cvfit$cv.lambda)
+#' fit<-sparse.mediation.grplasso(X,M,Y,lambda1 = cvfit$cv.lambda1,lambda2 = cvfit$cv.lambda2)
 #' nonzerogroups = 1-as.numeric((fit$hata!=0)+(fit$hatb!=0) ==0)
-#' refit<-sparse.mediation.grplasso(X,M[,nonzerogroups==1],Y,lambda = 0)
+#' refit<-sparse.mediation.grplasso(X,M[,nonzerogroups==1],Y,lambda = 0,lambda2 = cvfit$cv.lambda2)
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
-#' @keywords hdlfpca gglasso
+#' @keywords gglasso
 #' @import parallel
 #' @import MASS
 #' @import gglasso
+#' @import Matrix
 #' @export
 
 
-cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-10),K=5,max.iter=100,
-                                       lambda= log(1+(1:15)/40),
+cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
+                                       lambda1= exp(-5:0),
+                                       lambda2= exp(seq(0,0.5*log(ncol(M)),length=3)),
                                        grpgroup=c(1, rep(1:V+1,2)),
                                        penalty.factor=c(0,rep(1,V)),
-                                       threshold=0,
                                        verbose=FALSE,
-                                       multicore=1,seednum=1000000){
+                                       multicore=1,seednum=100000){
   ## Center all values
   N = nrow(M)
   V = ncol(M)
@@ -69,51 +69,23 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-10),K=5,max.iter=100,
   cvid = (rep(1:K, each=ceiling(N/K))[1:N])[sort.int(rnorm(N),index.return=TRUE)$ix]
 ##  sparse.mediation.grplasso.fold(1, Y,X,M,cvid,lambdas[10], max.iter, tol)
   if(multicore>1){
-    options(cores = multicore)
+#    options(cores = multicore)
     z<-mclapply(1:K, function(fold){
-      sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda, max.iter, tol)}, mc.cores=multicore)
+      sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda1=lambda1, lambda2=lambda2, max.iter=max.iter, tol=tol)}, mc.cores=multicore)
   }else{
-    z<-lapply(1:K, function(fold){sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda,max.iter, tol)})
+    z<-lapply(1:K, function(fold){sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda1, lambda2,max.iter, tol)})
   }
 
   mseest=apply(do.call(cbind,lapply(z,function(x)x$mse$mse)),1,sum)
   minloc=which.min(mseest)
-  min.lambda=lambda[minloc]
+  min.lambda1=z[[1]]$lambda1[minloc]
+  min.lambda2=z[[1]]$lambda2[minloc]
 
 
-  return(list(cv.lambda=min.lambda, cv.mse=mseest[minloc],
-              mse=mseest, lambda=lambda,z=z))
+  return(list(cv.lambda1=min.lambda1, cv.lambda2=min.lambda2,cv.mse=mseest[minloc],
+              mse=mseest, lambda1=z[[1]]$lambda1,z=z, lambda2=z[[1]]$lambda2))
 
 }
 
-sparse.mediation.grplasso.fold<-function(fold, Y,X,M,cvid,lambda=0.01,
-                                         tol=10^(-10),max.iter=100,
-                                         grpgroup=c(1, rep(1:V+1,2)),
-                                         penalty.factor=c(0,rep(1,V)),
-                                         threshold=0.00001,
-                                         verbose=FALSE){
-  test.indx=which(cvid==fold)
-  train.indx=which(cvid!=fold)
-  fit = sparse.mediation.grplasso(Y=Y[train.indx,], X=X[train.indx,], M=M[train.indx,],
-                                  lambda=lambda, tol=tol, max.iter=max.iter, grpgroup=grpgroup,
-                                  penalty.factor=penalty.factor, threshold=threshold,verbose=verbose )
 
-  fit$mse = cv.sparse.mediation.msecomputing(obj=fit, Y.test=Y[test.indx,], X.test=X[test.indx,], M.test=M[test.indx,])
-  return(fit)
-}
 
-cv.sparse.mediation.msecomputing<-function(obj, Y.test, X.test, M.test){
-  V = (nrow(obj$beta))
-  a.train=obj$hata
-  b.train=obj$hatb
-  c.train=matrix(obj$c,nrow=1)
-  #	print(obj)
-  yhat = X.test %*% c.train + M.test %*% b.train
-  mse.m = rep(0,length(obj$lambda))
-  for (j in 1:length(obj$lambda)){
-    mhat=X.test %*% t(a.train[,j])
-    mse.m[j]=sum((M.test - mhat)^2)
-  }
-  mse=(apply(Y.test-yhat, 2,function(x){sum(x^2)})) + mse.m
-  return(list(mse=mse,lambda=obj$lambda))
-}

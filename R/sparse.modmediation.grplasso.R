@@ -29,20 +29,21 @@
 #' N=100
 #' V=50
 #' set.seed(1234)
-#' a = rbinom(V,1,0.1)*5;b<-a
+#' a = c(rep(1,3),  rep(0,V-3))*5;b<-a
 #' X = rnorm(N)
 #' M =  X %*% t(a)+ matrix(rnorm(N*V),N,V)
 #' Y =  X + M %*% b + rnorm(N)
-#' fit=sparse.mediation.grplasso(X,M,Y,verbose=FALSE, lambda = log(1+(1:20)/50))
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
 #' @keywords highdimensional mediation glmnet
 #' @import parallel
 #' @import MASS
 #' @import gglasso
+#' @importFrom stats var predict
 #' @export
+#'
 sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
-                                     lambda = log(1+(1:50)/125),X.cont=TRUE,
+                                     lambda = log(1+(1:10)/10),X.cont=TRUE,
                                      grpgroup=c(rep(1,3), rep(1:V+1,5)),
                                      penalty.factor=c(0,rep(1,V)),
                                      threshold=0,
