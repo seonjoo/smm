@@ -8,8 +8,8 @@ sparse.mediation.grplasso.fold<-function(fold, Y,X,M,cvid,
                                          lambda1=0.01,
                                          lambda2=1,
                                          tol=10^(-10),max.iter=100,
-                                         grpgroup=c(1, rep(1:V+1,2)),
-                                         penalty.factor=c(0,rep(1,V)),
+                                         grpgroup=c(1, rep(1:(ncol(M))+1,2)),
+                                         penalty.factor=c(0,rep(1,ncol(M))),
                                          threshold=0.00001,
                                          verbose=FALSE){
   test.indx=which(cvid==fold)

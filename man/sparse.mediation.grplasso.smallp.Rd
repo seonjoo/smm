@@ -11,8 +11,8 @@ sparse.mediation.grplasso.smallp(
   tol = 10^(-10),
   max.iter = 100,
   lambda = exp(-5:0),
-  grpgroup = c(1, rep(1:V + 1, 2)),
-  penalty.factor = c(0, rep(1, V)),
+  grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
+  penalty.factor = c(0, rep(1, ncol(M))),
   verbose = FALSE
 )
 }

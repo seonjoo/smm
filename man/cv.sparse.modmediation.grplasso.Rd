@@ -13,8 +13,8 @@ cv.sparse.modmediation.grplasso(
   K = 5,
   max.iter = 100,
   lambda = log(1 + (1:15)/40),
-  grpgroup = c(rep(1, 3), rep(1:V + 1, 5)),
-  penalty.factor = c(0, rep(1, V)),
+  grpgroup = c(rep(1, 3), rep(1:ncol(M) + 1, 5)),
+  penalty.factor = c(0, rep(1, ncol(M))),
   verbose = FALSE,
   multicore = 1,
   seednum = 1e+06

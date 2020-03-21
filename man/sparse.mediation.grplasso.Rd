@@ -12,8 +12,8 @@ sparse.mediation.grplasso(
   max.iter = 100,
   lambda1 = 0.01,
   lambda2 = 1,
-  grpgroup = c(1, rep(1:V + 1, 2)),
-  penalty.factor = c(0, rep(1, V)),
+  grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
+  penalty.factor = c(0, rep(1, ncol(M))),
   Omega.out = FALSE,
   verbose = FALSE
 )

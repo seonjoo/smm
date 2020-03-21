@@ -13,7 +13,7 @@ computebic(
   c,
   tol = 10^(-10),
   max.iter = 100,
-  grpgroup = c(1, rep(1:V + 1, 2)),
+  grpgroup = c(1, rep(1:ncol(M) + 1, 2)),
   threshold = 0
 )
 }

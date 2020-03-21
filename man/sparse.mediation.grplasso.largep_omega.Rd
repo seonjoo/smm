@@ -12,8 +12,8 @@ sparse.mediation.grplasso.largep_omega(
   max.iter = 100,
   lambda1 = exp(-8:0),
   lambda2 = exp(seq(0, 0.8 * log(ncol(M)), length = 4)),
-  grpgroup = c(1, rep(1:V + 1, 2)),
-  penalty.factor = c(0, rep(1, V)),
+  grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
+  penalty.factor = c(0, rep(1, ncol(M))),
   verbose = FALSE,
   Omega.out = FALSE
 )

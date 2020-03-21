@@ -44,8 +44,8 @@
 #'
 sparse.modmediation.grplasso = function(X,M,Y,Z,tol=10^(-10),max.iter=100,
                                      lambda = log(1+(1:10)/10),X.cont=TRUE,
-                                     grpgroup=c(rep(1,3), rep(1:V+1,5)),
-                                     penalty.factor=c(0,rep(1,V)),
+                                     grpgroup=c(1, rep(1:(ncol(M))+1,2)),
+                                     penalty.factor=c(0,rep(1,ncol(M))),
                                      threshold=0,
                                      verbose=FALSE){
 

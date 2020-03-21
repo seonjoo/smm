@@ -32,7 +32,7 @@
 #'
 #'
 computebic<-function(X,Y,M,a,b,c,tol=10^(-10),
-                     max.iter=100,grpgroup=c(1, rep(1:V+1,2)),
+                     max.iter=100,grpgroup=c(1, rep(1:ncol(M)+1,2)),
                      threshold=0){
   N=nrow(M);V=ncol(M)
   zerolist=c(0,as.numeric(b*a==0))
