@@ -36,6 +36,7 @@
 
 cv.sparse.modmediation.grplasso= function(X,M,Y,Z,tol=10^(-5),K=5,max.iter=100,
                                        lambda= log(1+(1:15)/40),
+                                       alpha=c(0,0.5,0.95),
                                        grpgroup=c(rep(1,3), rep(1:ncol(M)+1,5)),
                                        penalty.factor=c(0,rep(1,ncol(M))),
                                        verbose=FALSE,
@@ -64,6 +65,7 @@ cv.sparse.modmediation.grplasso= function(X,M,Y,Z,tol=10^(-5),K=5,max.iter=100,
     z<-mclapply(1:K, function(fold){
       sparse.modmediation.grplasso.fold(fold,X,M,Y,Z,cvid,tol=tol,max.iter=max.iter,
                                               lambda = lambda,
+                                              alpha=alpha,
                                               grpgroup=grpgroup,
                                               penalty.factor=penalty.factor,
                                               threshold=threshold,

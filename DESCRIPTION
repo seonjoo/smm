@@ -17,7 +17,9 @@ Imports:
     MASS,
     rsvd,
     Matrix,
-    QUIC
+    QUIC,
+    SGL,
+    Rcpp
 Suggests: 
     knitr,
     dplyr,
@@ -25,3 +27,5 @@ Suggests:
     gridExtra,
     reshape2
 VignetteBuilder: knitr
+LinkingTo: 
+    Rcpp

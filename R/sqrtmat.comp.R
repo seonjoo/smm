@@ -12,7 +12,7 @@
 #'
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
-#' @keywords squareroot
+#' @keywords internal
 #' @import MASS
 #' @import rsvd
 #' @export

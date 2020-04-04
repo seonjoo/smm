@@ -31,6 +31,4 @@ TBA
 \author{
 Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 }
-\keyword{L1penalization}
-\keyword{highdimensional}
-\keyword{mediation}
+\keyword{internal}

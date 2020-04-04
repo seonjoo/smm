@@ -148,6 +148,7 @@ sparse.mediation.grplasso.smallp = function(X,M,Y,
     hata=betaest[(1:V)+V+1,]*M.sd/X.sd,
     medest = betaest[(1:V)+1,]*betaest[(1:V)+V+1,]*Y.sd/X.sd,
     lambda = lambda,
-    nump=nump
+    nump=nump,
+    nmed=apply(medest,2,function(x)sum(x!=0))
   ))
 }

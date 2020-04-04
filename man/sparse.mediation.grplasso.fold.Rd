@@ -12,11 +12,12 @@ sparse.mediation.grplasso.fold(
   cvid,
   lambda1 = 0.01,
   lambda2 = 1,
+  alpha = 0.95,
   tol = 10^(-10),
   max.iter = 100,
   grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
   penalty.factor = c(0, rep(1, ncol(M))),
-  threshold = 1e-05,
+  threshold = 0,
   verbose = FALSE
 )
 }

@@ -16,8 +16,10 @@
 #' @param max.iter (default=100) maximum iteration
 #' @param lambda1 (default=exp(-5:0)) tuning parameter for c',a, b coefficients
 #' @param lambda2 (default=exp(seq(0,0.5*log(ncol(M)),length=3))) tuning parameter for the Omega=Sigma_2^{-1}
+#' @param alpha (default=0) alpha=0, group lasso penalization will run
 #' @param grpgroup (default=c(1,rep( 1:V +1,2)))
 #' @param penalty.factor (default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.
+#' @param threshold (default=10^(-8))
 #' @return c directeffect
 #' @return hatb Path b (M->Y given X) estimates
 #' @return hata Path a (X->M) estimates
@@ -47,10 +49,12 @@ sparse.mediation.grplasso = function(X,M,Y,
                                      max.iter=100,
                                      lambda1 = 0.01,#exp(-5:0),
                                      lambda2 = 1,#exp(seq(0,0.5*log(ncol(M)),length=3)),
+                                     alpha=0,
                                      grpgroup=c(1, rep(1:(ncol(M))+1,2)),
                                      penalty.factor=c(0,rep(1,ncol(M))),
                                      Omega.out=FALSE,
-                                     verbose=FALSE){
+                                     verbose=FALSE,
+                                     threshold=10^(-8)){
 
     re=list()
     V = ncol(M)
@@ -62,13 +66,25 @@ sparse.mediation.grplasso = function(X,M,Y,
     #                                       penalty.factor=penalty.factor,
     #                                       grpgroup=grpgroup)
     #  }else{
-       re=sparse.mediation.grplasso.largep_omega(X,M,Y,tol=tol,max.iter=max.iter,
+       # re=sparse.mediation.grplasso.largep_omega(X,M,Y,tol=tol,max.iter=max.iter,
+       #                                           lambda1 = lambda1,
+       #                                           lambda2 = lambda2,
+       #                                           alpha=alpha,
+       #                                           verbose=verbose,
+       #                                           Omega.out=Omega.out,
+       #                                           penalty.factor=penalty.factor,
+       #                                           grpgroup=grpgroup)
+
+       re=sparse.mediation.sgrlasso.largep_omega(X,M,Y,tol=tol,max.iter=max.iter,
                                                  lambda1 = lambda1,
                                                  lambda2 = lambda2,
+                                                 alpha=alpha,
                                                  verbose=verbose,
                                                  Omega.out=Omega.out,
                                                  penalty.factor=penalty.factor,
                                                  grpgroup=grpgroup)
-    # }
+
+
+           # }
     return(re)
 }

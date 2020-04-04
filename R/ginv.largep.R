@@ -10,10 +10,8 @@
 #'
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
-#' @keywords highdimensional mediation L1penalization
-#' @import parallel
+#' @keywords internal
 #' @import MASS
-#' @import glmnet
 #' @export
 
 ginv.largep<-function(x.c,sqrtmat=TRUE, sqrtinvmat=TRUE, thresh=10^{-20}){

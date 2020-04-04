@@ -67,6 +67,4 @@ TBA
 \author{
 Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 }
-\keyword{glmnet}
-\keyword{highdimensional}
-\keyword{mediation}
+\keyword{internal}

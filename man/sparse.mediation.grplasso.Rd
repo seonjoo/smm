@@ -12,10 +12,12 @@ sparse.mediation.grplasso(
   max.iter = 100,
   lambda1 = 0.01,
   lambda2 = 1,
+  alpha = 0,
   grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
   penalty.factor = c(0, rep(1, ncol(M))),
   Omega.out = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  threshold = 10^(-8)
 )
 }
 \arguments{
@@ -33,9 +35,13 @@ sparse.mediation.grplasso(
 
 \item{lambda2}{(default=exp(seq(0,0.5*log(ncol(M)),length=3))) tuning parameter for the Omega=Sigma_2^{-1}}
 
+\item{alpha}{(default=0) alpha=0, group lasso penalization will run}
+
 \item{grpgroup}{(default=c(1,rep( 1:V +1,2)))}
 
 \item{penalty.factor}{(default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.}
+
+\item{threshold}{(default=10^(-8))}
 }
 \value{
 c directeffect

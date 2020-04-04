@@ -24,10 +24,7 @@
 #' Y =  X + M %*% b + rnorm(N)
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
-#' @keywords highdimensional mediation glmnet
-#' @import parallel
-#' @import MASS
-#' @import gglasso
+#' @keywords internal
 #' @export
 #'
 #'
