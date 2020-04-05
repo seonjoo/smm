@@ -80,7 +80,8 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
                                      max.iter=max.iter, tol=tol,
                                      threshold=threshold)}, mc.cores=multicore)
   }else{
-    z<-lapply(1:K, function(fold){sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda1, lambda2,alpha=alpha,
+    z<-lapply(1:K, function(fold){sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,
+                                                                 lambda1, lambda2,alpha=alpha,
                                                                  max.iter=max.iter, tol=tol,
                                                                  threshold=threshold)})
   }
@@ -103,9 +104,10 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
   return(list(cv.lambda1=min.lambda1, cv.lambda2=min.lambda2, cv.alpha=min.alpha,
               cv.mse=mseest[minloc],
               mse=mseest,
-              lambda1=merged.aaa$lambda1,z=z,
+              lambda1=merged.aaa$lambda1,
               lambda2=merged.aaa$lambda2,
-              alpha=merged.aaa$alpha))
+              alpha=merged.aaa$alpha,
+              z=z))
 
 }
 
