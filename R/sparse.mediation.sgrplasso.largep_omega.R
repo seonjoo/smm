@@ -107,9 +107,10 @@ sparse.mediation.sgrlasso.largep_omega = function(X,M,Y,
   ## Interative Update
 
   #betaest =  matrix(0,1+2*V,length(lambda1)*length(lambda2)*length(tau)*length(alpha))
-  alphalist=rep(alpha, each=length(lambda1)*length(lambda2))
-  lam1=rep(rep(sort(lambda1,decreasing=TRUE), each=length(lambda2)), length(alpha))
-  lam2=rep(rep(lambda2, length(lambda1)),length(alpha))
+  lam1=rep(sort(lambda1,decreasing=TRUE), each=length(alpha)*length(lambda2))
+  lam2=rep(rep(lambda2, length(alpha)),length(lambda1))
+  alphalist=rep(rep(sort(alpha,decreasing=TRUE), each=length(lambda2)), length(lambda1))
+
 
 #  for (j in 1:length(lam1)){
   myfunc<-function(j, gamma_new = rep(0,V+1),alpha_new = rep(0,V)){
@@ -172,11 +173,24 @@ sparse.mediation.sgrlasso.largep_omega = function(X,M,Y,
         iter=iter+1
         if (verbose==TRUE){print(c(iter, err))}
       }
-      return(list(betahat=beta_new,Omegahat=Omega,alpha=alphalist[j], lambda1=lam1[j],lambda2=lam2[j]))
+      ### compute BIC
+      # zerolist=(c(gamma_new[1],alpha_new) ==0)
+      # tmp = M - matrix(X,N,1) %*% matrix(alpha_new,1,V)
+      # Sigma2 = t(tmp)%*%tmp/N
+      # Omega=QUIC( Sigma2,rho=sigma2penalty*lam2[j],msg=0)
+      # bic=N*log(sum(Y - cbind(X,M) %*% gamma_new)^2/N) + N*log(det(Omega$W)) +
+      #   log(N)*(sum(1-zerolist))
+
+      return(list(betahat=beta_new,Omegahat=Omega,#bic=bic,
+                  alpha=alphalist[j], lambda1=lam1[j],lambda2=lam2[j]))
   }
 
   zzz<-c()
-  for (j in 1:length(lam1)){
+  j=0
+  nonzeros=0 ## when the algorithm selects too many parameters, we stop there.
+  while( j<length(lam1) & nonzeros< V ){
+    j=j+1
+#  for (j in 1:length(lam1)){
     re<-c();
     gamma_init = rep(0,V+1)
     alpha_init = rep(0,V)
@@ -186,9 +200,11 @@ sparse.mediation.sgrlasso.largep_omega = function(X,M,Y,
     }
     try(re<-myfunc(j=j,gamma_new=gamma_init,alpha_new=alpha_init))
     zzz[[j]]<-re
+    nonzeros=sum(re$betahat!=0)
     }
 
   betaest=do.call(cbind,lapply(zzz, function(x)x$betahat))
+#  bics=unlist(lapply(zzz, function(x)x$bic))
 
   cest =betaest[1,]
   medest = betaest[(1:V)+1,]*betaest[(1:V)+V+1,]
@@ -206,6 +222,7 @@ sparse.mediation.sgrlasso.largep_omega = function(X,M,Y,
     lambda2=unlist(lapply(zzz, function(x)x$lambda2)),
     nump=nump,
     Omega=Omegas,
+#    bic=bics,
     nmed=apply(as.matrix(medest), 2,function(x)sum(abs(x)>0))
   ))
 }

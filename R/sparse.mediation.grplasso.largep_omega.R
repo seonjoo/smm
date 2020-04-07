@@ -141,12 +141,22 @@ sparse.mediation.grplasso.largep_omega = function(X,M,Y,
         iter=iter+1
         if (verbose==TRUE){print(c(iter, err))}
       }
-      return(list(betahat=beta_new[c(1, (1:V)*2, c(1:V)*2+1)],Omegahat=Omega))
+
+      ### compute BIC
+      zerolist=(c(gamma_new[1],alpha_new) ==0)
+      tmp = M - matrix(X,N,1) %*% matrix(alpha_new,1,V)
+      Sigma2 = t(tmp)%*%tmp/N
+      bic=N*log(sum(Y - cbind(X,M) %*% gamma_new)^2/N) + N*log(det(Sigma2)) +
+        log(N)*(sum(1-zerolist))
+
+      return(list(betahat=beta_new[c(1, (1:V)*2, c(1:V)*2+1)],Omegahat=Omega,bic=bic))
   }
   zzz=lapply(1:length(lam1), function(xxx){
     re<-c();try(re<-myfunc(xxx));return(re)})
 
   betaest=do.call(cbind,lapply(zzz, function(x)x$betahat))
+  bics=do.call(cbind,lapply(zzz, function(x)x$bic))
+
   #     betaest[,j]=beta_new
  #   }
 
@@ -166,6 +176,7 @@ sparse.mediation.grplasso.largep_omega = function(X,M,Y,
     lambda1 = lam1,
     lambda2 = lam2,
     nump=nump,
-    Omega=Omegas
+    Omega=Omegas,
+bic=bics
   ))
 }
