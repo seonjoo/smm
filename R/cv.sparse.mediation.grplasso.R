@@ -90,24 +90,24 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
                                                                  non.zeros.stop=non.zeros.stop)})
   }
 
-  aaa=lapply(z,function(x){
-    cbind(data.frame(x$mse),alpha=x$alpha)})
-  merged.aaa=aaa[[1]]
-  for (j in 2:length(aaa)){
-    merged.aaa=merge(merged.aaa,aaa[[j]], by=c('lambda1','lambda2','alpha'),all=TRUE)
-  }
-  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){mean(x,na.rm=TRUE)})
+  aaa=do.call(rbind,lapply(z,function(x){data.frame(x$mse)}))
+  merged.aaa=do.call(rbind,
+          lapply(split(aaa, f=aaa[,-1]),
+                 function(x){data.frame(t(apply(as.matrix(x),2,function(kk)mean(kk,na.rm=TRUE))),n=sum(is.na(x[,1])==FALSE))}))
+
+  merged.aaa=merged.aaa[merged.aaa$n> max(2,K/2),]
+#  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){mean(x,na.rm=TRUE)})
 #  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){sum(x)})
 
-  minloc=which.min(mseest)
+  minloc=which.min(merged.aaa$mse)
   min.lambda1=merged.aaa$lambda1[minloc]
   min.lambda2=merged.aaa$lambda2[minloc]
   min.alpha=merged.aaa$alpha[minloc]
 
 
   return(list(cv.lambda1=min.lambda1, cv.lambda2=min.lambda2, cv.alpha=min.alpha,
-              cv.mse=mseest[minloc],
-              mse=mseest,
+              cv.mse=merged.aaa$mse[minloc],
+              mse=merged.aaa$mse,
               lambda1=merged.aaa$lambda1,
               lambda2=merged.aaa$lambda2,
               alpha=merged.aaa$alpha,
