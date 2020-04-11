@@ -22,6 +22,7 @@
 #' @param verbose (default=FALSE) print progress
 #' @param Omega.out (defult=FALSE) output Omega estimates (beta version WIP.)
 #' @param threshold (default=10^(-5))
+#' @param non.zeros.stop (default=ncol(M)) When to stop the regularization path.
 #' @return c directeffect
 #' @return hatb Path b (M->Y given X) estimates
 #' @return hata Path a (X->M) estimates
@@ -69,7 +70,8 @@ sparse.mediation.sgrlasso.largep_omega = function(X,M,Y,
                                          penalty.factor=c(0,rep(1,ncol(M))),
                                          verbose=FALSE,
                                          Omega.out=FALSE,
-                                         threshold=10^(-5)){
+                                         threshold=10^(-5),
+                                         non.zeros.stop=ncol(M)){
 
 
   ## Center all values, and also make their scales to be 1. In this context, all coefficients will be dexribed in terms of correlation or partial correlations.
@@ -188,7 +190,7 @@ sparse.mediation.sgrlasso.largep_omega = function(X,M,Y,
   zzz<-c()
   j=0
   nonzeros=0 ## when the algorithm selects too many parameters, we stop there.
-  while( j<length(lam1) & nonzeros< V ){
+  while( j<length(lam1) & nonzeros< non.zeros.stop ){
     j=j+1
 #  for (j in 1:length(lam1)){
     re<-c();

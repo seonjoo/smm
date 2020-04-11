@@ -16,8 +16,8 @@ cv.sparse.mediation.msecomputing<-function(obj, Y.test, X.test, M.test){
   mse.m = rep(0,length(obj$lambda1))
   for (j in 1:length(obj$lambda1)){
     mhat=X.test %*% t(a.train[,j])
-    mse.m[j]=sum((M.test - mhat)^2)
+    mse.m[j]=mean((M.test - mhat)^2)
   }
-  mse=(apply(Y.test-yhat, 2,function(x){sum(x^2)})) + mse.m
+  mse=(apply(Y.test-yhat, 2,function(x){mean(x^2)})) + mse.m
   return(list(mse=mse,lambda1=obj$lambda1,lambda2=obj$lambda2))
 }

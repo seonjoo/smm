@@ -12,6 +12,7 @@
 #' @param penalty.factor (default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.
 #' @param multicore (default=1) number of multicore
 #' @param seednum (default=10000) seed number for cross validation
+#' @param non.zeros.stop (default=ncol(M)) where to stop the regularization path.
 #' @return cv.lambda: optimal lambda
 #' @return cv.tau: optimal tau
 #' @return cv.alpha: optimal tau
@@ -52,7 +53,8 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
                                        penalty.factor=c(0,rep(1,ncol(M))),
                                        verbose=FALSE,
                                        multicore=1,seednum=100000,
-                                       threshold=0){
+                                       threshold=0,
+                                       non.zeros.stop=ncol(M)){
   ## Center all values
   N = nrow(M)
   V = ncol(M)
@@ -78,22 +80,24 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
                                      cvid,
                                      lambda1=lambda1, lambda2=lambda2, alpha=alpha,
                                      max.iter=max.iter, tol=tol,
-                                     threshold=threshold)}, mc.cores=multicore)
+                                     threshold=threshold,
+                                     non.zeros.stop=non.zeros.stop)}, mc.cores=multicore)
   }else{
     z<-lapply(1:K, function(fold){sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,
                                                                  lambda1, lambda2,alpha=alpha,
                                                                  max.iter=max.iter, tol=tol,
-                                                                 threshold=threshold)})
+                                                                 threshold=threshold,
+                                                                 non.zeros.stop=non.zeros.stop)})
   }
 
   aaa=lapply(z,function(x){
     cbind(data.frame(x$mse),alpha=x$alpha)})
   merged.aaa=aaa[[1]]
   for (j in 2:length(aaa)){
-    merged.aaa=merge(merged.aaa,aaa[[j]], by=c('lambda1','lambda2','alpha'))
+    merged.aaa=merge(merged.aaa,aaa[[j]], by=c('lambda1','lambda2','alpha'),all=TRUE)
   }
-#  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){mean(x,na.rm=TRUE)})
-  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){sum(x)})
+  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){mean(x,na.rm=TRUE)})
+#  mseest=apply(merged.aaa[,-c(1:3)],1,function(x){sum(x)})
 
   minloc=which.min(mseest)
   min.lambda1=merged.aaa$lambda1[minloc]

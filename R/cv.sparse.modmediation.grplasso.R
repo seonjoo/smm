@@ -40,7 +40,8 @@ cv.sparse.modmediation.grplasso= function(X,M,Y,Z,tol=10^(-5),K=5,max.iter=100,
                                        grpgroup=c(rep(1,3), rep(1:ncol(M)+1,5)),
                                        penalty.factor=c(0,rep(1,ncol(M))),
                                        verbose=FALSE,
-                                       multicore=1,seednum=1000000){
+                                       multicore=1,seednum=1000000,
+                                       non.zeros.stop=ncol(M)){
   ## Center all values
   N = nrow(M)
   V = ncol(M)
@@ -64,21 +65,23 @@ cv.sparse.modmediation.grplasso= function(X,M,Y,Z,tol=10^(-5),K=5,max.iter=100,
     options(cores = multicore)
     z<-mclapply(1:K, function(fold){
       sparse.modmediation.grplasso.fold(fold,X,M,Y,Z,cvid,tol=tol,max.iter=max.iter,
-                                              lambda = lambda,
-                                              alpha=alpha,
-                                              grpgroup=grpgroup,
-                                              penalty.factor=penalty.factor,
-                                              threshold=threshold,
-                                              verbose=verbose)
+                                        lambda = lambda,
+                                        alpha=alpha,
+                                        grpgroup=grpgroup,
+                                        penalty.factor=penalty.factor,
+                                        threshold=threshold,
+                                        non.zeros.stop=non.zeros.stop,
+                                        verbose=verbose)
 #    sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda, max.iter, tol)
       }, mc.cores=multicore)
   }else{
     z<-lapply(1:K, function(fold){sparse.modmediation.grplasso.fold(fold,X,M,Y,Z,cvid,tol=tol,max.iter=max.iter,
-                                                                          lambda = lambda,
-                                                                          grpgroup=grpgroup,
-                                                                          penalty.factor=penalty.factor,
-                                                                          threshold=threshold,
-                                                                          verbose=verbose)})
+                                                                    lambda = lambda,
+                                                                    grpgroup=grpgroup,
+                                                                    penalty.factor=penalty.factor,
+                                                                    threshold=threshold,
+                                                                    non.zeros.stop=non.zeros.stop,
+                                                                    verbose=verbose)})
   }
 
   mseest=apply(do.call(cbind,lapply(z,function(x)x$mse$mse)),1,sum)

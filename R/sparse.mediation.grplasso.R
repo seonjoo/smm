@@ -20,6 +20,7 @@
 #' @param grpgroup (default=c(1,rep( 1:V +1,2)))
 #' @param penalty.factor (default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.
 #' @param threshold (default=10^(-8))
+#' @param non.zeros.stop (default=ncol(M)) when to stop searching regularization path
 #' @return c directeffect
 #' @return hatb Path b (M->Y given X) estimates
 #' @return hata Path a (X->M) estimates
@@ -54,7 +55,8 @@ sparse.mediation.grplasso = function(X,M,Y,
                                      penalty.factor=c(0,rep(1,ncol(M))),
                                      Omega.out=FALSE,
                                      verbose=FALSE,
-                                     threshold=10^(-8)){
+                                     threshold=0,
+                                     non.zeros.stop=ncol(M)){
 
     re=list()
     V = ncol(M)
@@ -82,7 +84,10 @@ sparse.mediation.grplasso = function(X,M,Y,
                                                  verbose=verbose,
                                                  Omega.out=Omega.out,
                                                  penalty.factor=penalty.factor,
-                                                 grpgroup=grpgroup)
+                                                 grpgroup=grpgroup,
+                                                 threshold=threshold,
+                                                 non.zeros.stop=non.zeros.stop
+                                                 )
 
 
            # }

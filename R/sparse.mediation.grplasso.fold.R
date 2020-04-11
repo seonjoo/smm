@@ -12,6 +12,7 @@ sparse.mediation.grplasso.fold<-function(fold, Y,X,M,cvid,
                                          grpgroup=c(1, rep(1:(ncol(M))+1,2)),
                                          penalty.factor=c(0,rep(1,ncol(M))),
                                          threshold=0,
+                                         non.zeros.stop=ncol(M),
                                          verbose=FALSE){
   test.indx=which(cvid==fold)
   train.indx=which(cvid!=fold)
@@ -24,7 +25,8 @@ sparse.mediation.grplasso.fold<-function(fold, Y,X,M,cvid,
                                   grpgroup=grpgroup,
                                   penalty.factor=penalty.factor,
                                   verbose=verbose,
-                                  threshold=threshold)
+                                  threshold=threshold,
+                                  non.zeros.stop=non.zeros.stop)
 
   fit$mse = cv.sparse.mediation.msecomputing(obj=fit, Y.test=Y[test.indx], X.test=X[test.indx,], M.test=M[test.indx,])
   return(fit)
