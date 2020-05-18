@@ -52,7 +52,8 @@ cv.sparse.mediation.grplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
                                        grpgroup=c(1, rep(1:(ncol(M))+1,2)),
                                        penalty.factor=c(0,rep(1,ncol(M))),
                                        verbose=FALSE,
-                                       multicore=1,seednum=100000,
+                                       multicore=1,
+                                       seednum=100000,
                                        threshold=0,
                                        non.zeros.stop=ncol(M)){
   ## Center all values
