@@ -13,11 +13,12 @@ sparse.mediation.grplasso(
   lambda1 = 0.01,
   lambda2 = 1,
   alpha = 0,
-  grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
+  group.penalty.factor = c(0, rep(1, ncol(M))),
   penalty.factor = c(0, rep(1, ncol(M))),
   Omega.out = FALSE,
   verbose = FALSE,
-  threshold = 10^(-8)
+  threshold = 0,
+  non.zeros.stop = ncol(M)
 )
 }
 \arguments{
@@ -37,11 +38,13 @@ sparse.mediation.grplasso(
 
 \item{alpha}{(default=0) alpha=0, group lasso penalization will run}
 
-\item{grpgroup}{(default=c(1,rep( 1:V +1,2)))}
+\item{group.penalty.factor}{(V+1)-dimensional group penalty factor vector. If a user does not want to penalize mediator, specify 0 otherwise 1. The first element is the direct effect followed by V-mediators. The default value is c(0,rep(1,V)).}
 
-\item{penalty.factor}{(default=c(0,rep(sqrt(2),V))) give different weight of penalization for the 2V mediation paths.}
+\item{penalty.factor}{(1+2*V)-dimensional sparsity penalty factor vector.}
 
 \item{threshold}{(default=10^(-8))}
+
+\item{non.zeros.stop}{(default=ncol(M)) when to stop searching regularization path}
 }
 \value{
 c directeffect

@@ -8,6 +8,7 @@
 #' @param max.iter (default=100) maximum iteration
 #' @param lambda1 (default=exp(-5:0)) tuning parameter for L1 penalization
 #' @param lambda2 (default=exp(-5:0)) tuning parameter for L1 penalization
+#' @param group.penalty.factor (default=c(0,rep(1,V))) give different weight of penalization for the V+1 mediation paths.
 #' @param penalty.factor (default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.
 #' @param multicore (default=1) number of multicore
 #' @param seednum (default=10000) seed number for cross validation
@@ -28,7 +29,7 @@
 #' X = rnorm(N)
 #' M =  X %*% t(a)+ matrix(rnorm(N*V),N,V)
 #' Y =  as.vector(X + M %*% b + rnorm(N))
-#' system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 4,multicore = 4, seednum = 20200317))
+#' system.time(cvfit<-cv.sparse.mediation.sgrplasso(X, M, Y, K = 4,multicore = 4, seednum = 20200317))
 #' cvfit$cv.lambda
 #' fit<-sparse.mediation.grplasso(X,M,Y,lambda1 = cvfit$cv.lambda1,lambda2 = cvfit$cv.lambda2)
 #' nonzerogroups = 1-as.numeric((fit$hata!=0)+(fit$hatb!=0) ==0)
@@ -47,10 +48,11 @@ cv.sparse.mediation.sgrplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
                                        lambda1= exp(-5:0),
                                        lambda2= exp(seq(0,0.5*log(ncol(M)),length=3)),
                                        alpha=c(0.5,0.95),
-                                       grpgroup=c(1, rep(1:(ncol(M))+1,2)),
-#                                       penalty.factor=c(0,rep(1,ncol(M))),
+                                       group.penalty.factor=c(0, rep(1, ncol(M))),
+                                       penalty.factor=c(0, rep(1, ncol(M)*2)),
                                        verbose=FALSE,
-                                       multicore=1,seednum=100000){
+                                       multicore=1,seednum=100000,
+                                       non.zeros.stop=ncol(M)){
   ## Center all values
   N = nrow(M)
   V = ncol(M)
@@ -72,20 +74,43 @@ cv.sparse.mediation.sgrplasso= function(X,M,Y,tol=10^(-5),K=5,max.iter=100,
   if(multicore>1){
 #    options(cores = multicore)
     z<-mclapply(1:K, function(fold){
-      sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda1=lambda1, lambda2=lambda2, max.iter=max.iter, tol=tol)}, mc.cores=multicore)
+      sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda1=lambda1,
+                                     lambda2=lambda2, alpha=alpha,
+                                     max.iter=max.iter, tol=tol,
+                                     group.penalty.factor=group.penalty.factor,
+                                     penalty.factor=penalty.factor,
+                                     non.zeros.stop=non.zeros.stop)},
+      mc.cores=multicore)
   }else{
-    z<-lapply(1:K, function(fold){sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,lambda1, lambda2,max.iter, tol)})
+    z<-lapply(1:K, function(fold){
+      sparse.mediation.grplasso.fold(fold, Y,X,M,cvid,
+                                     lambda1, lambda2,alpha=alpha,
+                                     max.iter=max.iter, tol=tol,
+                                     group.penalty.factor=group.penalty.factor,
+                                     penalty.factor=penalty.factor,
+                                     non.zeros.stop=ncol(M))})
   }
 
-  mseest=apply(do.call(cbind,lapply(z,function(x)x$mse$mse)),1,sum)
-  minloc=which.min(mseest)
-  min.lambda1=z[[1]]$lambda1[minloc]
-  min.lambda2=z[[1]]$lambda2[minloc]
+  #######################
+  aaa=do.call(rbind,lapply(z,function(x){data.frame(x$mse)}))
+  merged.aaa=do.call(rbind,
+                     lapply(split(aaa, f=aaa[,-1]),
+                            function(x){data.frame(t(apply(as.matrix(x),2,function(kk)mean(kk,na.rm=TRUE))),n=sum(is.na(x[,1])==FALSE))}))
+
+  merged.aaa=merged.aaa[merged.aaa$n> max(2,K/2),]
+  minloc=which.min(merged.aaa$mse)
+  min.lambda1=merged.aaa$lambda1[minloc]
+  min.lambda2=merged.aaa$lambda2[minloc]
+  min.alpha=merged.aaa$alpha[minloc]
 
 
-  return(list(cv.lambda1=min.lambda1, cv.lambda2=min.lambda2,cv.mse=mseest[minloc],
-              mse=mseest, lambda1=z[[1]]$lambda1,z=z, lambda2=z[[1]]$lambda2))
-
+  return(list(cv.lambda1=min.lambda1, cv.lambda2=min.lambda2, cv.alpha=min.alpha,
+              cv.mse=merged.aaa$mse[minloc],
+              mse=merged.aaa$mse,
+              lambda1=merged.aaa$lambda1,
+              lambda2=merged.aaa$lambda2,
+              alpha=merged.aaa$alpha,
+              z=z))
 }
 
 

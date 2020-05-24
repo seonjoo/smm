@@ -14,10 +14,12 @@ cv.sparse.mediation.sgrplasso(
   lambda1 = exp(-5:0),
   lambda2 = exp(seq(0, 0.5 * log(ncol(M)), length = 3)),
   alpha = c(0.5, 0.95),
-  grpgroup = c(1, rep(1:(ncol(M)) + 1, 2)),
+  group.penalty.factor = c(0, rep(1, ncol(M))),
+  penalty.factor = c(0, rep(1, ncol(M) * 2)),
   verbose = FALSE,
   multicore = 1,
-  seednum = 1e+05
+  seednum = 1e+05,
+  non.zeros.stop = ncol(M)
 )
 }
 \arguments{
@@ -37,11 +39,13 @@ cv.sparse.mediation.sgrplasso(
 
 \item{lambda2}{(default=exp(-5:0)) tuning parameter for L1 penalization}
 
+\item{group.penalty.factor}{(default=c(0,rep(1,V))) give different weight of penalization for the V+1 mediation paths.}
+
+\item{penalty.factor}{(default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.}
+
 \item{multicore}{(default=1) number of multicore}
 
 \item{seednum}{(default=10000) seed number for cross validation}
-
-\item{penalty.factor}{(default=c(0,rep(1,2*V))) give different weight of penalization for the 2V mediation paths.}
 }
 \value{
 cv.lambda: optimal lambda
@@ -73,7 +77,7 @@ a = c(rep(1,3),rep(0,V-3))*5;b<-a
 X = rnorm(N)
 M =  X \%*\% t(a)+ matrix(rnorm(N*V),N,V)
 Y =  as.vector(X + M \%*\% b + rnorm(N))
-system.time(cvfit<-cv.sparse.mediation.grplasso(X, M, Y, K = 4,multicore = 4, seednum = 20200317))
+system.time(cvfit<-cv.sparse.mediation.sgrplasso(X, M, Y, K = 4,multicore = 4, seednum = 20200317))
 cvfit$cv.lambda
 fit<-sparse.mediation.grplasso(X,M,Y,lambda1 = cvfit$cv.lambda1,lambda2 = cvfit$cv.lambda2)
 nonzerogroups = 1-as.numeric((fit$hata!=0)+(fit$hatb!=0) ==0)
