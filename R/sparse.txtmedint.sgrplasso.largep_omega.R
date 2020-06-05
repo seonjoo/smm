@@ -24,7 +24,7 @@
 #' @param threshold (default=10^(-5))
 #' @param non.zeros.stop (default=ncol(M)) When to stop the regularization path.
 #' @param group.penalty.factor (V+1)-dimensional group penalty factor vector. If a user does not want to penalize mediator, specify 0 otherwise 1. The first element is the direct effect followed by V-mediators. The default value is c(0,rep(1,V)).
-#' @param penalty.factor (1+3*V)-dimensional sparsity penalty factor vector.
+#' @param penalty.factor (1+3*V)-dimensional sparsity penalty factor vector. The order of parameters: c(c,b11,b12,...,b1V, b21,...,b2V, a1,a2,...,aV)
 #' @return c directeffect
 #' @return hatb Path b (M->Y given X) estimates
 #' @return hata Path a (X->M) estimates
