@@ -183,7 +183,8 @@ sparse.txtmedint.sgrlasso.largep_omega = function(X,M,Y,#Cov=NULL,
       # bic=N*log(sum(Y - cbind(X,M) %*% gamma_new)^2/N) + N*log(det(Omega$W)) +
       #   log(N)*(sum(1-zerolist))
 
-      return(list(betahat=beta_new,gammahat=gamma_new, alphahat=alpha_new,Omegahat=Omega,#bic=bic,
+      return(list(betahat=beta_new,gammahat=gamma_new, alphahat=alpha_new,
+                  Omegahat=Omega,sigmasq=sigma1,#bic=bic,
                   alpha=alpha[k], lambda1=lam1[j],lambda2=lam2[j]))
   }
 
@@ -214,6 +215,7 @@ sparse.txtmedint.sgrlasso.largep_omega = function(X,M,Y,#Cov=NULL,
   alphas=unlist(lapply(zzz, function(x0){unlist(lapply(x0,function(xx){xx$alpha}))}))
   lam1s=unlist(lapply(zzz, function(x0){unlist(lapply(x0,function(xx){xx$lambda1}))}))
   lam2s=unlist(lapply(zzz, function(x0){unlist(lapply(x0,function(xx){xx$lambda2}))}))
+  sigmasqs=unlist(lapply(zzz, function(x0){unlist(lapply(x0,function(xx){xx$sigmasq}))}))
 
   #  alphaest=do.call(cbind,lapply(zzz, function(x)x$alphahat))
 #  gammaest=do.call(cbind,lapply(zzz, function(x)x$gammahat))
@@ -238,6 +240,7 @@ sparse.txtmedint.sgrlasso.largep_omega = function(X,M,Y,#Cov=NULL,
     lambda2=lam2s,
     nump=nump,
     Omega=Omegas,
+    sigmasq=sigmasqs,
 #    bic=bics,
     nmed=apply(as.matrix(medest), 2,function(x)sum(abs(x)>0)),
     ntxtmedint=apply(as.matrix(txtmedint), 2,function(x)sum(abs(x)>0))

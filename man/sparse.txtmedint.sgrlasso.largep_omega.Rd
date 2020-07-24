@@ -14,8 +14,8 @@ sparse.txtmedint.sgrlasso.largep_omega(
   lambda1 = exp(seq(1, -3, length = 10)),
   lambda2 = exp(-1),
   alpha = c(0.95, 0.5),
-  group.penalty.factor = c(0, rep(1, ncol(M))),
-  penalty.factor = c(0, rep(1, ncol(M) * 3)),
+  group.penalty.factor = c(1, rep(1, ncol(M))),
+  penalty.factor = c(1, rep(1, ncol(M) * 3)),
   verbose = FALSE,
   Omega.out = FALSE,
   threshold = 0,
@@ -41,7 +41,7 @@ sparse.txtmedint.sgrlasso.largep_omega(
 
 \item{group.penalty.factor}{(V+1)-dimensional group penalty factor vector. If a user does not want to penalize mediator, specify 0 otherwise 1. The first element is the direct effect followed by V-mediators. The default value is c(0,rep(1,V)).}
 
-\item{penalty.factor}{(1+3*V)-dimensional sparsity penalty factor vector.}
+\item{penalty.factor}{(1+3*V)-dimensional sparsity penalty factor vector. The order of parameters: c(c,b11,b12,...,b1V, b21,...,b2V, a1,a2,...,aV)}
 
 \item{verbose}{(default=FALSE) print progress}
 
