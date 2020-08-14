@@ -184,7 +184,7 @@ sparse.txtmedint.sgrlasso.largep_omega = function(X,M,Y,#Cov=NULL,
       #   log(N)*(sum(1-zerolist))
 
       return(list(betahat=beta_new,gammahat=gamma_new, alphahat=alpha_new,
-                  Omegahat=Omega,sigmasq=sigma1,#bic=bic,
+                  Omegahat=Omega$X,sigmasq=sigma1,#bic=bic,
                   alpha=alpha[k], lambda1=lam1[j],lambda2=lam2[j]))
   }
 
@@ -227,7 +227,8 @@ sparse.txtmedint.sgrlasso.largep_omega = function(X,M,Y,#Cov=NULL,
   nump=apply(betaest,2,function(x){sum(abs(x)>0)})
 
   if(Omega.out==FALSE){Omegas=NULL
-  }else{Omegas=lapply(zzz, function(x)x$Omegahat)}
+  }else{Omegas=lapply(zzz, function(x0){lapply(x0,function(xx){xx$Omegahat})})}
+
   return(list(
     c = cest,
     hatb1=betaest[(1:V)+1,]*Y.sd/M.sd,
