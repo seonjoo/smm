@@ -218,8 +218,8 @@ sparse.mediation.sgrplasso.largep_omega = function(X,M,Y,#Cov=NULL,
   medest = betaest[(1:V)+1,]*betaest[(1:V)+V+1,]
   nump=apply(betaest,2,function(x){sum(abs(x)>0)})
 
-  if(Omega.out==FALSE){Omegas=NULL}
-  if (Omega.out==TRUE){Omegas=lapply(zzz, function(x)x$Omegahat)}
+  if (Omega.out==FALSE){Omegas=NULL
+  }else{Omegas=lapply(zzz, function(x)x$Omegahat)}
   return(list(
     c = cest,
     hatb=betaest[(1:V)+1,]*Y.sd/M.sd,
