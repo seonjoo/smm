@@ -32,11 +32,14 @@
 #' N=100
 #' V=50
 #' set.seed(1234)
-#' a = c(rep(1,3),rep(0,V-3))*5;b<-a
+#' a = c(rep(1,3),rep(0,V-3));b<-a
 #' X = rnorm(N)
 #' M =  X %*% t(a)+ matrix(rnorm(N*V),N,V)
 #' Y =  X + M %*% b + rnorm(N)
-#' fit=sparse.mediation.grplasso(X,M,Y,verbose=FALSE, lambda1 = exp(-5:0))
+#' fit=sparse.mediation.grplasso(X,M,Y,verbose=FALSE,
+#' lambda1 = exp(seq(-5,-1, length=10)),
+#' alpha=c(0.95,0.75,0.5),lambda2=c(1,2),Omega.out = FALSE)
+#' fit
 #' @author Seonjoo Lee, \email{sl3670@cumc.columbia.edu}
 #' @references TBA
 #' @keywords highdimensional mediation glmnet
