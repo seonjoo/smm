@@ -39,6 +39,15 @@
 
 # HBIC performance
 
+#' Title
+#'
+#' @param fit
+#' @param fit.n
+#'
+#' @return
+#' @export
+#'
+#' @examples
 hbic_int <- function(fit, fit.n){
 
   sum.fit = NULL
