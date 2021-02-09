@@ -39,7 +39,7 @@
 
 # HBIC performance
 
-#' Title
+#' Function to do HBIC computation for exposure by mediation interaction model
 #'
 #' @param fit
 #' @param fit.n

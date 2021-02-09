@@ -39,7 +39,7 @@
 
 # HBIC performance
 
-#' Title
+#' Function to do HBIC computation for multiple mediations model
 #'
 #' @param fit
 #' @param fit.n
